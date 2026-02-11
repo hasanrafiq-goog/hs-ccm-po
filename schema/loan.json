@@ -1,0 +1,21 @@
+{
+  "product_type": "Term Loan",
+  "mandatory_fields": [
+    "client_id",
+    "notional",
+    "currency",
+    "sector",
+    "base_rate",
+    "spread",
+    "drawdown_date"
+  ],
+  "reference_data": {
+    "currency": ["USD", "GBP", "EUR", "HKD", "SGD"],
+    "sector": ["TMT", "Energy", "Retail", "Manufacturing", "Real Estate"],
+    "facility_type": ["Term Loan", "Bridge Loan"]
+  },
+  "derivation_targets": {
+    "reference_mapped": ["risk_rating_code", "gl_account_id", "booking_entity"],
+    "calculated": ["all_in_rate", "interest_accrual_daily"]
+  }
+}
