@@ -1,35 +1,22 @@
 {
   "product_type": "Term Loan",
-  "mandatory_fields": [
-    "client_id",
-    "notional",
-    "currency",
-    "sector",
-    "base_rate",
-    "spread"
-  ],
-  "all_fields": [
-    "client_id",
-    "notional",
-    "currency",
-    "sector",
-    "base_rate",
-    "spread",
-    "drawdown_date",
-    "maturity_date",
-    "repayment_frequency",
-    "collateral_type",
-    "purpose_of_loan",
-    "rm_comments"
-  ],
+  "fields_definition": {
+    "client_id": { "type": "reference", "format": "string", "mandatory": true },
+    "notional": { "type": "currency", "format": "float", "mandatory": true },
+    "currency": { "type": "reference", "format": "ISO-4217", "mandatory": true },
+    "sector": { "type": "reference", "format": "string", "mandatory": true },
+    "base_rate": { "type": "percentage", "format": "float", "mandatory": true },
+    "spread": { "type": "percentage", "format": "float", "mandatory": true },
+    "drawdown_date": { "type": "date", "format": "YYYY-MM-DD", "mandatory": true },
+    "maturity_date": { "type": "date", "format": "YYYY-MM-DD", "mandatory": false },
+    "rm_comments": { "type": "free_text", "format": "string", "mandatory": false }
+  },
   "reference_data": {
     "currency": ["USD", "GBP", "EUR", "HKD", "SGD"],
-    "sector": ["TMT", "Energy", "Retail", "Manufacturing", "Real Estate"],
-    "repayment_frequency": ["Monthly", "Quarterly", "Semi-Annual", "Bullet"],
-    "collateral_type": ["Unsecured", "Cash", "Real Estate", "Equipment"]
+    "sector": ["TMT", "Energy", "Retail", "Manufacturing", "Real Estate"]
   },
   "derivation_targets": {
-    "reference_mapped": ["risk_rating_code", "gl_account_id", "booking_entity"],
-    "calculated": ["all_in_rate", "interest_accrual_daily"]
+    "reference_mapped": ["risk_rating_code", "gl_account_id"],
+    "calculated": ["all_in_rate"]
   }
 }
