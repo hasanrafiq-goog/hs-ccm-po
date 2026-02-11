@@ -6,13 +6,27 @@
     "currency",
     "sector",
     "base_rate",
+    "spread"
+  ],
+  "all_fields": [
+    "client_id",
+    "notional",
+    "currency",
+    "sector",
+    "base_rate",
     "spread",
-    "drawdown_date"
+    "drawdown_date",
+    "maturity_date",
+    "repayment_frequency",
+    "collateral_type",
+    "purpose_of_loan",
+    "rm_comments"
   ],
   "reference_data": {
     "currency": ["USD", "GBP", "EUR", "HKD", "SGD"],
     "sector": ["TMT", "Energy", "Retail", "Manufacturing", "Real Estate"],
-    "facility_type": ["Term Loan", "Bridge Loan"]
+    "repayment_frequency": ["Monthly", "Quarterly", "Semi-Annual", "Bullet"],
+    "collateral_type": ["Unsecured", "Cash", "Real Estate", "Equipment"]
   },
   "derivation_targets": {
     "reference_mapped": ["risk_rating_code", "gl_account_id", "booking_entity"],
