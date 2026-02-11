@@ -1,33 +1,21 @@
 {
   "product_type": "Revolving Credit",
-  "mandatory_fields": [
-    "client_id",
-    "limit_amount",
-    "currency",
-    "sector",
-    "commitment_fee_bps",
-    "utilization_threshold"
-  ],
-  "all_fields": [
-    "client_id",
-    "limit_amount",
-    "currency",
-    "sector",
-    "commitment_fee_bps",
-    "utilization_threshold",
-    "availability_period_end",
-    "facility_status",
-    "covenant_details",
-    "syndication_flag"
-  ],
+  "fields_definition": {
+    "client_id": { "type": "reference", "format": "string", "mandatory": true },
+    "limit_amount": { "type": "currency", "format": "float", "mandatory": true },
+    "currency": { "type": "reference", "format": "ISO-4217", "mandatory": true },
+    "commitment_fee_bps": { "type": "basis_points", "format": "int", "mandatory": true },
+    "utilization_threshold": { "type": "percentage", "format": "float", "mandatory": true },
+    "availability_period_end": { "type": "date", "format": "YYYY-MM-DD", "mandatory": false },
+    "syndication_flag": { "type": "boolean", "format": "string", "mandatory": false }
+  },
   "reference_data": {
     "currency": ["USD", "GBP", "EUR"],
     "sector": ["TMT", "Energy", "Financial Institutions"],
-    "facility_status": ["Active", "Pending", "Review"],
     "syndication_flag": ["Yes", "No"]
   },
   "derivation_targets": {
     "reference_mapped": ["risk_rating_code", "limit_type_code"],
-    "calculated": ["total_commitment_fee", "effective_yield"]
+    "calculated": ["total_commitment_fee"]
   }
 }
