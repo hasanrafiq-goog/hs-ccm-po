@@ -1,0 +1,20 @@
+{
+  "product_type": "Revolving Credit",
+  "mandatory_fields": [
+    "client_id",
+    "limit_amount",
+    "currency",
+    "sector",
+    "commitment_fee_bps",
+    "utilization_threshold"
+  ],
+  "reference_data": {
+    "currency": ["USD", "GBP", "EUR"],
+    "sector": ["TMT", "Energy", "Financial Institutions"],
+    "revolving_type": ["Standard RCF", "Swingline"]
+  },
+  "derivation_targets": {
+    "reference_mapped": ["risk_rating_code", "limit_type_code"],
+    "calculated": ["total_commitment_fee", "effective_yield"]
+  }
+}
