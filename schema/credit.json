@@ -8,10 +8,23 @@
     "commitment_fee_bps",
     "utilization_threshold"
   ],
+  "all_fields": [
+    "client_id",
+    "limit_amount",
+    "currency",
+    "sector",
+    "commitment_fee_bps",
+    "utilization_threshold",
+    "availability_period_end",
+    "facility_status",
+    "covenant_details",
+    "syndication_flag"
+  ],
   "reference_data": {
     "currency": ["USD", "GBP", "EUR"],
     "sector": ["TMT", "Energy", "Financial Institutions"],
-    "revolving_type": ["Standard RCF", "Swingline"]
+    "facility_status": ["Active", "Pending", "Review"],
+    "syndication_flag": ["Yes", "No"]
   },
   "derivation_targets": {
     "reference_mapped": ["risk_rating_code", "limit_type_code"],
