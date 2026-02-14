@@ -1,22 +1,32 @@
 {
   "product_type": "Term Loan",
-  "fields_definition": {
-    "client_id": { "type": "reference", "format": "string", "mandatory": true },
-    "notional": { "type": "currency", "format": "float", "mandatory": true },
-    "currency": { "type": "reference", "format": "ISO-4217", "mandatory": true },
-    "sector": { "type": "reference", "format": "string", "mandatory": true },
-    "base_rate": { "type": "percentage", "format": "float", "mandatory": true },
-    "spread": { "type": "percentage", "format": "float", "mandatory": true },
-    "drawdown_date": { "type": "date", "format": "YYYY-MM-DD", "mandatory": true },
-    "maturity_date": { "type": "date", "format": "YYYY-MM-DD", "mandatory": false },
-    "rm_comments": { "type": "free_text", "format": "string", "mandatory": false }
+  "schema_details": {
+    "fields_definition": {
+      "client_id": { "type": "reference", "format": "string", "mandatory": true },
+      "notional": { "type": "currency", "format": "float", "mandatory": true, "min": 100000 },
+      "base_rate": { "type": "percentage", "format": "float", "mandatory": true },
+      "spread": { "type": "percentage", "format": "float", "mandatory": true },
+      "drawdown_date": { "type": "date", "format": "YYYY-MM-DD", "mandatory": true }
+    },
+    "reference_data": {
+      "currency": ["USD", "GBP", "EUR", "HKD"],
+      "sector": ["TMT", "Energy", "Retail"]
+    }
   },
-  "reference_data": {
-    "currency": ["USD", "GBP", "EUR", "HKD", "SGD"],
-    "sector": ["TMT", "Energy", "Retail", "Manufacturing", "Real Estate"]
-  },
-  "derivation_targets": {
-    "reference_mapped": ["risk_rating_code", "gl_account_id"],
-    "calculated": ["all_in_rate"]
+  "target_api_payload": {
+    "header": { "system_id": "HSBC_ORC", "version": "v2" },
+    "body": {
+      "transaction_info": {
+        "external_id": "{{client_id}}",
+        "value_date": "{{drawdown_date}}"
+      },
+      "facility_details": [
+        {
+          "limit": "{{notional}}",
+          "margin_bps": "{{spread * 100}}",
+          "index": "{{base_rate}}"
+        }
+      ]
+    }
   }
 }
