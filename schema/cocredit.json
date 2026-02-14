@@ -21,31 +21,20 @@
     }
   },
   "target_api_payload": {
-    "header": {
-      "msg_type": "RCF_CALC",
-      "source_system": "ADK_FRONT"
-    },
-    "body": {
-      "facility_info": {
-        "client_ref": "{{client_id}}",
-        "total_limit": "{{limit_amount}}",
-        "ccy": "{{currency}}"
-      },
-      "pricing_grid": {
-        "fees": [
-          {
-            "fee_type": "COMMITMENT",
-            "value_bps": "{{commitment_fee_bps}}"
-          }
-        ],
-        "thresholds": {
-          "min_usage_pct": "{{utilization_threshold * 100}}"
-        }
-      },
-      "structural_details": {
-        "syndicated": "{{syndication_flag == 'Yes' ? true : false}}",
-        "expiry": "{{availability_period_end}}"
+    "client_id": "{{client_id}}",
+    "availability_period_end": "{{availability_period_end}}",
+    "syndication_flag": "{{syndication_flag}}",
+    "is_syndicated": "{{syndication_flag == 'Yes' ? true : false}}",
+    "risk_rating_code": "{{risk_rating_code}}",
+    "total_commitment_fee": "{{total_commitment_fee}}",
+    "facility_limits": [
+      {
+        "limit_amount": "{{limit_amount}}",
+        "currency": "{{currency}}",
+        "commitment_fee_bps": "{{commitment_fee_bps}}",
+        "utilization_threshold": "{{utilization_threshold}}",
+        "utilization_threshold_pct": "{{utilization_threshold * 100}}"
       }
-    }
+    ]
   }
 }

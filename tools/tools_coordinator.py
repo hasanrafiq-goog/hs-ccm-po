@@ -1,18 +1,19 @@
 from google.agent_development_kit import ToolContext
 import json
 import os
+import re
 from datetime import datetime
 
 def get_product_schema_tool(tool_context: ToolContext, product_type: str):
     """
-    Retrieves the full product config, including validation rules 
+    Retrieves the full product config, including validation rules
     and API mapping blueprints.
     """
-    schema_map = {"loan": "loan.json", "rcf": "rcf.json"}
-    base_dir = os.path.dirname(os.path.dirname(__file__)) 
+    schema_map = {"loan": "loan.json", "cocredit": "cocredit.json"}
+    base_dir = os.path.dirname(os.path.dirname(__file__))
     file_name = schema_map.get(product_type.lower(), "loan.json")
     file_path = os.path.join(base_dir, "schema", file_name)
-    
+
     with open(file_path, 'r') as f:
         return json.load(f)
 
@@ -59,12 +60,12 @@ def validate_full_proposal(tool_context: ToolContext, proposal_data: dict, schem
 
         if val is not None:
             f_type = specs.get("type")
-            
+
             # 2. Numeric Validation
             if f_type in ["currency", "percentage", "basis_points"]:
                 if not isinstance(val, (int, float)):
                     errors.append(f"Field {field} must be numeric.")
-            
+
             # 3. Date Format Validation
             elif f_type == "date":
                 expected_format = specs.get("format", "%Y-%m-%d")
@@ -82,5 +83,11 @@ def validate_full_proposal(tool_context: ToolContext, proposal_data: dict, schem
 
     if errors:
         return {"status": "rejected", "errors": errors}
-    
+
     return {"status": "validated", "context": "ready_for_simulation"}
+
+def fetch_session_context(tool_context: ToolContext):
+    """
+    Retrieves historical chat and deal data for continuity.
+    """
+    return tool_context.state.get('current_deal_params', {})
