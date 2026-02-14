@@ -1,21 +1,51 @@
 {
   "product_type": "Revolving Credit",
-  "fields_definition": {
-    "client_id": { "type": "reference", "format": "string", "mandatory": true },
-    "limit_amount": { "type": "currency", "format": "float", "mandatory": true },
-    "currency": { "type": "reference", "format": "ISO-4217", "mandatory": true },
-    "commitment_fee_bps": { "type": "basis_points", "format": "int", "mandatory": true },
-    "utilization_threshold": { "type": "percentage", "format": "float", "mandatory": true },
-    "availability_period_end": { "type": "date", "format": "YYYY-MM-DD", "mandatory": false },
-    "syndication_flag": { "type": "boolean", "format": "string", "mandatory": false }
+  "schema_details": {
+    "fields_definition": {
+      "client_id": { "type": "reference", "format": "string", "mandatory": true },
+      "limit_amount": { "type": "currency", "format": "float", "mandatory": true },
+      "currency": { "type": "reference", "format": "ISO-4217", "mandatory": true },
+      "commitment_fee_bps": { "type": "basis_points", "format": "int", "mandatory": true },
+      "utilization_threshold": { "type": "percentage", "format": "float", "mandatory": true },
+      "availability_period_end": { "type": "date", "format": "YYYY-MM-DD", "mandatory": false },
+      "syndication_flag": { "type": "boolean", "format": "string", "mandatory": false }
+    },
+    "reference_data": {
+      "currency": ["USD", "GBP", "EUR"],
+      "sector": ["TMT", "Energy", "Financial Institutions"],
+      "syndication_flag": ["Yes", "No"]
+    },
+    "derivation_targets": {
+      "reference_mapped": ["risk_rating_code", "limit_type_code"],
+      "calculated": ["total_commitment_fee"]
+    }
   },
-  "reference_data": {
-    "currency": ["USD", "GBP", "EUR"],
-    "sector": ["TMT", "Energy", "Financial Institutions"],
-    "syndication_flag": ["Yes", "No"]
-  },
-  "derivation_targets": {
-    "reference_mapped": ["risk_rating_code", "limit_type_code"],
-    "calculated": ["total_commitment_fee"]
+  "target_api_payload": {
+    "header": {
+      "msg_type": "RCF_CALC",
+      "source_system": "ADK_FRONT"
+    },
+    "body": {
+      "facility_info": {
+        "client_ref": "{{client_id}}",
+        "total_limit": "{{limit_amount}}",
+        "ccy": "{{currency}}"
+      },
+      "pricing_grid": {
+        "fees": [
+          {
+            "fee_type": "COMMITMENT",
+            "value_bps": "{{commitment_fee_bps}}"
+          }
+        ],
+        "thresholds": {
+          "min_usage_pct": "{{utilization_threshold * 100}}"
+        }
+      },
+      "structural_details": {
+        "syndicated": "{{syndication_flag == 'Yes' ? true : false}}",
+        "expiry": "{{availability_period_end}}"
+      }
+    }
   }
 }
