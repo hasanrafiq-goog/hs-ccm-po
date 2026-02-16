@@ -1,4 +1,4 @@
-from google.agent_development_kit import ToolContext
+from google.adk.tools import ToolContext
 import json
 import os
 import re
@@ -21,23 +21,32 @@ def execute_field_derivation(tool_context: ToolContext, raw_inputs: dict, schema
     """
     Uses the 'derivation_targets' from the JSON to enrich deal data.
     """
+    print("\n" + "="*70)
+    print("🔧 EXECUTING FIELD DERIVATION")
+    print("="*70)
+    print(f"Input sector: {raw_inputs.get('sector')}")
+
     enriched_data = raw_inputs.copy()
     derivation_rules = schema.get("schema_details", {}).get("derivation_targets", {})
-    
+
     # 1. Logic for Reference Mapping (e.g., Risk Ratings)
     if "risk_rating_code" in derivation_rules.get("reference_mapped", []):
         sector_map = {"TMT": "RC-101", "Energy": "RC-202", "Retail": "RC-303"}
         enriched_data["risk_rating_code"] = sector_map.get(raw_inputs.get("sector"), "RC-GEN")
-    
+        print(f"✓ Derived risk_rating_code: {enriched_data['risk_rating_code']} (from sector: {raw_inputs.get('sector')})")
+
     # 2. Logic for Mathematical Calculations (e.g., All-in-Rate)
     if "calculated" in derivation_rules:
         try:
             base = float(raw_inputs.get("base_rate", 0))
             spread = float(raw_inputs.get("spread", 0))
             enriched_data["all_in_rate"] = base + spread
+            print(f"✓ Calculated all_in_rate: {enriched_data['all_in_rate']} (base: {base} + spread: {spread})")
         except (ValueError, TypeError):
             enriched_data["all_in_rate"] = 0.0
-    
+            print(f"⚠️ Failed to calculate all_in_rate, defaulting to 0.0")
+
+    print("="*70 + "\n")
     return enriched_data
 
 def validate_full_proposal(tool_context: ToolContext, proposal_data: dict, schema: dict):

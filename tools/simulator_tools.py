@@ -1,4 +1,4 @@
-from google.agent_development_kit import ToolContext
+from google.adk.tools import ToolContext
 import requests # Assuming standard REST calls for ORC API
 
 # --- TOOL IMPLEMENTATIONS FOR SIMULATOR ---
@@ -53,9 +53,19 @@ def run_orc_calculation(tool_context: ToolContext, api_payload: dict):
     INPUT: api_payload should be the complete JSON matching ORC API specification,
            with all placeholders already substituted by the Simulator agent.
     """
+    import json
+
+    # Log the received payload for debugging
+    print("\n" + "="*70)
+    print("🔍 API PAYLOAD RECEIVED BY run_orc_calculation")
+    print("="*70)
+    print(json.dumps(api_payload, indent=2))
+    print("="*70 + "\n")
+
     # TODO: Add validation to ensure no {{placeholders}} remain unfilled
     payload_str = str(api_payload)
     if "{{" in payload_str or "}}" in payload_str:
+        print("❌ ERROR: Payload contains unfilled placeholders!")
         return {
             "status": "error",
             "message": "Payload contains unfilled placeholders. Please ensure all template variables are substituted."
@@ -74,5 +84,10 @@ def run_orc_calculation(tool_context: ToolContext, api_payload: dict):
             "payload_received": api_payload  # For debugging
         }
     }
+
+    print("✅ Simulation executed successfully")
+    print(f"   RoRWA: {results['simulation_results']['rorwa']}")
+    print(f"   Profit: ${results['simulation_results']['profit']:,.2f}")
+    print(f"   RWA: ${results['simulation_results']['rwa']:,.2f}\n")
 
     return results

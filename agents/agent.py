@@ -1,20 +1,21 @@
-from google.agent_development_kit import LlmAgent
+from google.adk.agents.llm_agent import LlmAgent
 from tools.tools_coordinator import (
-    get_product_schema_tool, 
-    execute_field_derivation, 
-    validate_full_proposal, 
+    get_product_schema_tool,
+    execute_field_derivation,
+    validate_full_proposal,
     fetch_session_context
 )
-from tools.tools_simulator import (
-    validate_simulation_inputs, 
-    generate_variation_parameters, 
+from tools.simulator_tools import (
+    validate_simulation_inputs,
+    generate_variation_parameters,
     run_orc_calculation
 )
 
+# --- UNIFIED AGENT (Portfolio Coordinator + Simulator) ---
 # --- SIMULATOR AGENT ---
 simulator_agent = LlmAgent(
-    name="Simulator",
-    instructions="""
+    name="simulator",
+    instruction="""
     You are the Technical Specialist for the ORC Simulation API.
 
     Role & Workflow:
@@ -43,8 +44,8 @@ simulator_agent = LlmAgent(
 
 # --- PORTFOLIO COORDINATOR AGENT ---
 portfolio_coordinator = LlmAgent(
-    name="Portfolio Coordinator",
-    instructions="""
+    name="portfolio_coordinator",
+    instruction="""
     You are the Lead Orchestrator. Your goal is to guide the Relationship Manager (RM) from a query to a validated simulation.
 
     Strict Procedural Workflow:
@@ -57,6 +58,7 @@ portfolio_coordinator = LlmAgent(
     Step 3: Gap Analysis & HITL - Compare RM inputs against schema_details.fields_definition. If fields are missing or reference values are invalid, ask the RM to provide them.
 
     Step 4: Unified Derivation - Once inputs are complete, call 'execute_field_derivation' with the raw inputs and schema to generate all Calc and Ref fields (Risk Codes, All-in-Rate, etc.).
+        IMPORTANT: ALWAYS re-run 'execute_field_derivation' whenever ANY parameter changes (e.g., sector, spread, base_rate) because derived fields like risk_rating_code and all_in_rate depend on input values.
 
     Step 5: Quality Gate - Run 'validate_full_proposal' using the derived data and schema. If it returns 'rejected' with errors, report those errors to the RM for correction.
 
@@ -64,6 +66,11 @@ portfolio_coordinator = LlmAgent(
 
     Step 7: Delegation - Only after 'validated' status is received, delegate to the 'Simulator' sub-agent for the Type 1 Sweep.
         IMPORTANT: Pass BOTH the validated deal data AND the full schema (including target_api_payload) to the Simulator so it can perform intelligent payload mapping.
+
+    CRITICAL RULE: When RM updates ANY parameter (notional, spread, sector, etc.), you MUST:
+    1. Re-run 'execute_field_derivation' to recalculate derived fields
+    2. Re-run 'validate_full_proposal' to ensure updated data is valid
+    3. Only then proceed to simulation
 
     REMEMBER: Maintain all conversation state in tool_context.state to support incremental deal building.
     """,
