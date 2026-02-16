@@ -100,3 +100,18 @@ def fetch_session_context(tool_context: ToolContext):
     Retrieves historical chat and deal data for continuity.
     """
     return tool_context.state.get('current_deal_params', {})
+
+def save_deal_state(tool_context: ToolContext, deal_params: dict):
+    """
+    Saves the current deal parameters to session state for persistence across conversation turns.
+    This enables incremental parameter updates and retrieval via fetch_session_context.
+    """
+    print("\n" + "="*70)
+    print("💾 SAVING DEAL STATE")
+    print("="*70)
+    print(f"Saving deal with client_id: {deal_params.get('client_id')}")
+    print(f"Product type: {deal_params.get('product_type', 'Unknown')}")
+    print("="*70 + "\n")
+
+    tool_context.state['current_deal_params'] = deal_params
+    return {"status": "success", "message": "Deal state saved successfully"}

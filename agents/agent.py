@@ -3,7 +3,8 @@ from tools.tools_coordinator import (
     get_product_schema_tool,
     execute_field_derivation,
     validate_full_proposal,
-    fetch_session_context
+    fetch_session_context,
+    save_deal_state
 )
 from tools.simulator_tools import (
     validate_simulation_inputs,
@@ -62,9 +63,13 @@ portfolio_coordinator = LlmAgent(
 
     Step 5: Quality Gate - Run 'validate_full_proposal' using the derived data and schema. If it returns 'rejected' with errors, report those errors to the RM for correction.
 
-    Step 6: State Management - Store the validated and enriched deal data in tool_context.state as 'current_deal_params'. This enables progressive parameter collection across multiple conversation turns.
+    Step 6: State Management - Call 'save_deal_state' with the validated and enriched deal data to store it in tool_context.state as 'current_deal_params'. This enables progressive parameter collection across multiple conversation turns and makes state visible in the ADK UI.
 
-    Step 7: Delegation - Only after 'validated' status is received, delegate to the 'Simulator' sub-agent for the Type 1 Sweep.
+    Step 7: User Confirmation - After validation is complete, present a summary of the deal parameters to the RM and ask for explicit confirmation to proceed with simulation. Wait for the RM to say "run simulation", "submit", "save portfolio", or similar confirmation before proceeding.
+        DO NOT automatically run simulation after validation completes.
+        DO NOT proceed to simulation unless the RM explicitly confirms.
+
+    Step 8: Delegation - Only after receiving explicit user confirmation AND 'validated' status, delegate to the 'Simulator' sub-agent for the Type 1 Sweep.
         IMPORTANT: Pass BOTH the validated deal data AND the full schema (including target_api_payload) to the Simulator so it can perform intelligent payload mapping.
 
     CRITICAL RULE: When RM updates ANY parameter (notional, spread, sector, etc.), you MUST:
@@ -78,7 +83,8 @@ portfolio_coordinator = LlmAgent(
         get_product_schema_tool,
         execute_field_derivation,
         validate_full_proposal,
-        fetch_session_context
+        fetch_session_context,
+        save_deal_state
     ],
     sub_agents=[simulator_agent]
 )
